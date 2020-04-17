@@ -68,6 +68,63 @@ import { Car, cars as cars_list } from './cars';
                 .send(`Welcome to the Cloud, ${name}!`);
   } );
 
+
+  app.get("/cars/", async ( req: Request, res: Response)=>{
+
+      const { make } = req.query;
+      
+      let car_list = cars;
+
+      if(make){
+        car_list = cars_list.filter((car)=>car.make === make);
+      }
+
+      res.status(200).send(car_list);
+
+      
+  } );
+
+  app.get("/cars/:id", async (req: Request, res: Response)=>{
+
+    let { id } = req.params;
+
+    
+
+    if(!id){
+      return res.status(400).send("please add a valid id");
+    }
+    const car = cars.filter((car)=>car.id == id);
+
+    if(car && car.length === 0){
+      return res.status(404).send("no such car found");
+    }
+    res.status(200).send(car);
+
+  });
+
+  app.post("/cars/", async (req: Request, res: Response)=>{
+
+    let{ make, type, model, cost, id } = req.body;
+
+    if(!make || !type ||! model || !cost || !id){
+      res.status(400).send("Kindly enter all parameters")
+    }
+
+    const new_car : Car = {
+      make: make,
+      type: type,
+      model: model,
+      cost: cost,
+      id: id
+
+    };
+
+    cars.push(new_car);
+
+    return res.status(201).send(new_car);
+
+  });
+
   // @TODO Add an endpoint to GET a list of cars
   // it should be filterable by make with a query paramater
 
